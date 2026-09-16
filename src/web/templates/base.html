@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Камера с камерами и видео{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<nav class="navbar">
+    <a href="/">Карта</a>
+    <a href="/dashboard">Личный кабинет</a>
+    <a href="#" id="logout-link">Выйти</a>
+</nav>
+<main>
+    {% block content %}{% endblock %}
+</main>
+<script src="{{ url_for('static', path='/js/auth.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

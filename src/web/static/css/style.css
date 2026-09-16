@@ -1,0 +1,7 @@
+body { font-family: system-ui, sans-serif; margin: 0; }
+body.map-page main { padding: 0; }
+.navbar { display: flex; gap: 1rem; padding: 1rem; background: #1a1a2e; }
+.navbar a { color: #fff; text-decoration: none; }
+main { padding: 1.5rem; }
+form { display: flex; flex-direction: column; gap: 0.75rem; max-width: 320px; }
+.error { color: #d33; min-height: 1.2em; }

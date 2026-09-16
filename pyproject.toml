@@ -1,0 +1,72 @@
+[tool.poetry]
+name = "camera-video-map"
+version = "0.1.0"
+description = ""
+authors = ["bagkir <bagrecovkirill@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.141.1"
+uvicorn = {extras = ["standard"], version = "^0.52.4"}
+sqlalchemy = "^2.0.52"
+alembic = "^1.19.1"
+asyncpg = "^0.31.0"
+pydantic = {extras = ["email"], version = "^2.13.5"}
+pydantic-settings = "^2.15.0"
+httpx = "^0.28.1"
+python-dotenv = "^1.2.3"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+bcrypt = "<4.1"
+python-jose = "^3.5.0"
+redis = "^8.1.0"
+minio = "^7.2.20"
+python-multipart = "^0.0.32"
+ruff = "^0.16.6"
+jinja2 = "^3.1.6"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.1.1"
+pytest-asyncio = "^1.4.0"
+black = "^26.5.1"
+ruff = "^0.16.4"
+mypy = "^2.3.1"
+types-python-jose = "^3.5.0.20260408"
+types-passlib = "^1.7.7.20260211"
+pre-commit = "^4.6.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.Form",
+    "fastapi.File",
+    "fastapi.Query",
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 72
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
+pythonpath = ["."]
