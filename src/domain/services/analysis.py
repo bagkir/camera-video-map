@@ -51,10 +51,10 @@ class AnalysisService:
         self,
         *,
         camera_id: uuid.UUID,
-        analysis_type=None,
-        status=None,
-        limit=100,
-        offset=0
+        analysis_type: AnalysisType | None = None,
+        status: AnalysisStatus | None = None,
+        limit: int = 100,
+        offset: int = 0,
     ) -> list[Analysis]:
         return await self.analysis_repository.list_by_camera(
             camera_id=camera_id,

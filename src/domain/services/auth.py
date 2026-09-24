@@ -1,7 +1,11 @@
 from src.core.exceptions import AlreadyExistsException, UnauthorizedException
 from src.data.models.user import User
 from src.data.repositories.user_repository import UserRepository
-from src.utils.securitry import authenticate_user, decode_token, get_password_hash
+from src.utils.securitry import (
+    authenticate_user,
+    decode_token,
+    get_password_hash_async,
+)
 
 
 class AuthService:
@@ -15,7 +19,7 @@ class AuthService:
         return await self.user_repository.create(
             email=email,
             full_name=full_name,
-            password_hash=get_password_hash(password),
+            password_hash=await get_password_hash_async(password),
         )
 
     async def login(self, email: str, password: str) -> User:

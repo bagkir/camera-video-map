@@ -2,22 +2,6 @@
 
 import uuid
 
-import pytest
-
-import src.domain.services.video as video_service_module
-
-
-class _FakeMinioClient:
-    def fput_object(self, bucket: str, key: str, path: str, content_type: str) -> None:
-        pass
-
-
-@pytest.fixture(autouse=True)
-def fake_minio(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(
-        video_service_module, "get_minio_client", lambda: _FakeMinioClient()
-    )
-
 
 async def _upload_video(client, camera_id, sample_mp4):
     with open(sample_mp4, "rb") as f:

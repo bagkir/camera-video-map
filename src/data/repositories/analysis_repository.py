@@ -3,6 +3,7 @@ from __future__ import annotations
 import uuid
 
 from sqlalchemy import and_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from src.data.models import Video
@@ -11,10 +12,10 @@ from src.data.repositories.base_repository import BaseRepository
 
 
 class AnalysisRepository(BaseRepository[Analysis]):
-    def __init__(self, session):
+    def __init__(self, session: AsyncSession):
         super().__init__(session, Analysis)
 
-    async def get_by_video(self, video_id) -> list[Analysis]:
+    async def get_by_video(self, video_id: uuid.UUID) -> list[Analysis]:
         result = await self.session.execute(
             select(self.model).where(self.model.video_id == video_id)
         )
@@ -23,7 +24,7 @@ class AnalysisRepository(BaseRepository[Analysis]):
     async def list_filtered(
         self,
         *,
-        video_id=None,
+        video_id: uuid.UUID | None = None,
         analysis_type: AnalysisType | None = None,
         status: AnalysisStatus | None = None,
         limit: int = 100,

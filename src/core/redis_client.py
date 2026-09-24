@@ -1,5 +1,4 @@
 import logging
-from collections.abc import AsyncGenerator
 
 import redis.asyncio as redis
 
@@ -19,10 +18,6 @@ def get_redis_client() -> redis.Redis:
             decode_responses=True,
         )
     return _redis_client
-
-
-async def get_redis() -> AsyncGenerator[redis.Redis, None]:
-    yield get_redis_client()
 
 
 async def check_redis_connection() -> bool:

@@ -75,7 +75,10 @@ async def get_camera_service(
 ) -> CameraService:
     return CameraService(
         camera_repository=camera_repository,
-        redis_client=redis_client,
+        # redis.asyncio.Redis реально удовлетворяет CameraService.RedisLike
+        # (get/set/delete есть и они async) — mypy не может это проверить
+        # структурно из-за @overload в стабах redis-py под общий sync/async API.
+        redis_client=redis_client,  # type: ignore[arg-type]
         cache_ttl=settings.CAMERA_GEOJSON_CACHE_TTL,
     )
 

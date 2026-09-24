@@ -1,7 +1,14 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const cameraId = window.CAMERA_ID;
 
-  const camera = await fetchJSON(`/api/v1/cameras/${cameraId}`);
+  let camera;
+  try {
+    camera = await fetchJSON(`/api/v1/cameras/${cameraId}`);
+  } catch (err) {
+    document.getElementById("camera-name").textContent =
+      `Не удалось загрузить камеру: ${err.message}`;
+    return;
+  }
   document.getElementById("camera-name").textContent = camera.camera_name;
   document.getElementById("camera-place").textContent = camera.camera_place || "";
 
@@ -115,10 +122,16 @@ async function loadVideos(cameraId) {
   if (form.time_of_day.value) params.set("time_of_day", form.time_of_day.value);
   if (form.tracing_status.value) params.set("tracing_status", form.tracing_status.value);
 
-  const videos = await fetchJSON(`/api/v1/videos?${params}`);
   const tbody = document.getElementById("videos-tbody");
-  tbody.innerHTML = "";
+  let videos;
+  try {
+    videos = await fetchJSON(`/api/v1/videos?${params}`);
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="8">Не удалось загрузить видео: ${err.message}</td></tr>`;
+    return;
+  }
 
+  tbody.innerHTML = "";
   if (!videos.length) {
     tbody.innerHTML = `<tr><td colspan="8">Видео не найдены</td></tr>`;
     return;
@@ -146,10 +159,16 @@ async function loadAnalyses(cameraId) {
   if (form.analysis_type.value) params.set("analysis_type", form.analysis_type.value);
   if (form.status.value) params.set("status", form.status.value);
 
-  const analyses = await fetchJSON(`/api/v1/cameras/${cameraId}/analyses?${params}`);
   const tbody = document.getElementById("analyses-tbody");
-  tbody.innerHTML = "";
+  let analyses;
+  try {
+    analyses = await fetchJSON(`/api/v1/cameras/${cameraId}/analyses?${params}`);
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="5">Не удалось загрузить анализы: ${err.message}</td></tr>`;
+    return;
+  }
 
+  tbody.innerHTML = "";
   if (!analyses.length) {
     tbody.innerHTML = `<tr><td colspan="5">Анализы не найдены</td></tr>`;
     return;

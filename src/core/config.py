@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
 
     SECRET_KEY: str
-    ALGORITHM: str
+    ALGORITHM: Literal["HS256", "HS384", "HS512"] = "HS256"
     # API_KEY: str
     # API_KEY_HEADER: str = "X-API-Key"
 

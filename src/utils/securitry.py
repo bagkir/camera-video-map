@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -33,7 +34,7 @@ def create_tokens(data: dict[str, Any]) -> dict[str, str]:
 
 
 async def authenticate_user(user: User | None, password: str) -> User | None:
-    if user is None or not verify_password(
+    if user is None or not await verify_password_async(
         plain_password=password, hashed_password=user.password_hash
     ):
         return None
@@ -69,6 +70,15 @@ def get_password_hash(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
+
+async def get_password_hash_async(password: str) -> str:
+    """bcrypt — CPU-bound, гоняем в отдельном потоке, не блокируя event loop."""
+    return await asyncio.to_thread(get_password_hash, password)
+
+
+async def verify_password_async(plain_password: str, hashed_password: str) -> bool:
+    return await asyncio.to_thread(verify_password, plain_password, hashed_password)
 
 
 def decode_token(token: str, expected_type: str = "access") -> dict[str, Any]:
