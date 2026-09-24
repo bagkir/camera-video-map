@@ -23,10 +23,16 @@ function renderVideoRow(v, { showAuthor, showCamera }) {
 }
 
 async function loadDashboard() {
-  const data = await fetchJSON("/api/v1/users/me/dashboard");
   const tbody = document.getElementById("recent-videos-tbody");
-  tbody.innerHTML = "";
+  let data;
+  try {
+    data = await fetchJSON("/api/v1/users/me/dashboard");
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="5">Не удалось загрузить данные: ${err.message}</td></tr>`;
+    return;
+  }
 
+  tbody.innerHTML = "";
   if (!data.recent_videos.length) {
     tbody.innerHTML = `<tr><td colspan="5">Вы ещё не загружали видео</td></tr>`;
     return;
@@ -43,10 +49,16 @@ async function loadAllVideos() {
   if (form.name_search.value) params.set("name_search", form.name_search.value);
   if (form.author_search.value) params.set("author_search", form.author_search.value);
 
-  const videos = await fetchJSON(`/api/v1/videos?${params}`);
   const tbody = document.getElementById("all-videos-tbody");
-  tbody.innerHTML = "";
+  let videos;
+  try {
+    videos = await fetchJSON(`/api/v1/videos?${params}`);
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6">Не удалось загрузить видео: ${err.message}</td></tr>`;
+    return;
+  }
 
+  tbody.innerHTML = "";
   if (!videos.length) {
     tbody.innerHTML = `<tr><td colspan="6">Ничего не найдено</td></tr>`;
     return;

@@ -3,6 +3,19 @@
 Refresh token).
 """
 
+from datetime import datetime, timedelta, timezone
+
+from jose import jwt
+
+from src.core.config import settings
+
+
+def _make_token(*, type_: str, expired: bool = False) -> str:
+    now = datetime.now(timezone.utc)
+    expire = now - timedelta(minutes=1) if expired else now + timedelta(minutes=30)
+    payload = {"sub": "1", "type": type_, "exp": int(expire.timestamp())}
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
 
 async def test_register_creates_user(client):
     response = await client.post(
@@ -119,4 +132,35 @@ async def test_logout_clears_session(logged_in_client):
     await logged_in_client.post("/api/v1/auth/logout")
 
     response = await logged_in_client.get("/api/v1/auth/me")
+    assert response.status_code == 401
+
+
+async def test_me_rejects_expired_access_token(client):
+    client.cookies.set("user_access_token", _make_token(type_="access", expired=True))
+    response = await client.get("/api/v1/auth/me")
+    assert response.status_code == 401
+
+
+async def test_me_rejects_tampered_token(client):
+    client.cookies.set("user_access_token", "not.a.valid.jwt")
+    response = await client.get("/api/v1/auth/me")
+    assert response.status_code == 401
+
+
+async def test_me_rejects_refresh_token_used_as_access(client):
+    """Токен валиден и не просрочен, но его type != "access" — не должен приниматься."""
+    client.cookies.set("user_access_token", _make_token(type_="refresh"))
+    response = await client.get("/api/v1/auth/me")
+    assert response.status_code == 401
+
+
+async def test_refresh_rejects_access_token_used_as_refresh(client):
+    client.cookies.set("user_refresh_token", _make_token(type_="access"))
+    response = await client.post("/api/v1/auth/refresh")
+    assert response.status_code == 401
+
+
+async def test_refresh_rejects_expired_refresh_token(client):
+    client.cookies.set("user_refresh_token", _make_token(type_="refresh", expired=True))
+    response = await client.post("/api/v1/auth/refresh")
     assert response.status_code == 401

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -46,8 +47,8 @@ async def lifespan(app: FastAPI):
     if not await check_minio_connection():
         logger.warning("MinIO is unreachable — video upload will fail until it's back")
     else:
-        ensure_bucket(settings.MINIO_BUCKET_VIDEOS)
-        ensure_bucket(settings.MINIO_BUCKET_FRAMES)
+        await asyncio.to_thread(ensure_bucket, settings.MINIO_BUCKET_VIDEOS)
+        await asyncio.to_thread(ensure_bucket, settings.MINIO_BUCKET_FRAMES)
     logger.info("Application started")
     yield
     await close_redis()

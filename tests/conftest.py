@@ -42,6 +42,7 @@ from sqlalchemy import event  # noqa: E402
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker  # noqa: E402
 
 import src.data.models  # noqa: E402,F401  регистрирует все модели в Base.metadata
+import src.domain.services.video as video_service_module  # noqa: E402
 from src.core.database import Base, engine, get_db  # noqa: E402
 from src.core.redis_client import get_redis_client  # noqa: E402
 from src.data.models.camera import Camera  # noqa: E402
@@ -70,6 +71,28 @@ class FakeRedis:
 
     async def ping(self) -> bool:
         return True
+
+
+class FakeMinioClient:
+    """Замена MinIO-клиента: fput_object пишет только в память."""
+
+    def __init__(self) -> None:
+        self.uploaded: list[tuple[str, str, str]] = []
+
+    def fput_object(self, bucket: str, key: str, path: str, content_type: str) -> None:
+        self.uploaded.append((bucket, key, content_type))
+
+
+@pytest.fixture(autouse=True)
+def fake_minio(monkeypatch: pytest.MonkeyPatch) -> FakeMinioClient:
+    """
+    Подменяет MinIO-клиент во всех тестах (autouse) — VideoService.upload
+    никогда не должен реально стучаться в MinIO. Тесты, которым нужен доступ
+    к списку загруженных файлов, просто запрашивают эту фикстуру как аргумент.
+    """
+    fake = FakeMinioClient()
+    monkeypatch.setattr(video_service_module, "get_minio_client", lambda: fake)
+    return fake
 
 
 @pytest_asyncio.fixture(scope="session")

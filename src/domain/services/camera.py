@@ -1,6 +1,7 @@
 import json
 import logging
 import uuid
+from typing import Any, Protocol
 
 from redis.exceptions import RedisError
 
@@ -12,9 +13,30 @@ logger = logging.getLogger(__name__)
 CAMERA_GEOJSON_CACHE_KEY = "cameras:geojson"
 
 
+class RedisLike(Protocol):
+    """
+    Минимальный интерфейс, который нужен сервису от Redis-клиента — позволяет
+    подставлять в тестах простую in-memory замену вместо реального
+    redis.asyncio.Redis, не наследуясь от него. Параметры позиционные (`/`),
+    чтобы не зависеть от точных имён (`key` vs `name`) в redis-py.
+
+    mypy не умеет чисто сверить это с реальным redis.asyncio.Redis — его
+    stub'ы используют @overload под общий sync/async API, и Protocol-проверка
+    перегруженных методов у mypy работает не полностью. Поэтому на месте
+    реальной инъекции (dependencies.py) стоит точечный type: ignore.
+    """
+
+    async def get(self, key: str, /) -> Any: ...
+    async def set(self, key: str, value: str, /, *, ex: int | None = None) -> Any: ...
+    async def delete(self, key: str, /) -> Any: ...
+
+
 class CameraService:
     def __init__(
-        self, camera_repository: CameraRepository, redis_client, cache_ttl: int
+        self,
+        camera_repository: CameraRepository,
+        redis_client: RedisLike,
+        cache_ttl: int,
     ):
         self.camera_repository = camera_repository
         self.redis = redis_client

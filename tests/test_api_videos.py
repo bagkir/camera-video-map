@@ -5,27 +5,6 @@
 
 import uuid
 
-import pytest
-
-import src.domain.services.video as video_service_module
-
-
-class _FakeMinioClient:
-    """Замена MinIO-клиента: fput_object пишет только в память."""
-
-    def __init__(self) -> None:
-        self.uploaded: list[tuple[str, str, str]] = []
-
-    def fput_object(self, bucket: str, key: str, path: str, content_type: str) -> None:
-        self.uploaded.append((bucket, key, content_type))
-
-
-@pytest.fixture(autouse=True)
-def fake_minio(monkeypatch: pytest.MonkeyPatch) -> _FakeMinioClient:
-    fake = _FakeMinioClient()
-    monkeypatch.setattr(video_service_module, "get_minio_client", lambda: fake)
-    return fake
-
 
 async def test_upload_requires_authentication(client, sample_mp4):
     with open(sample_mp4, "rb") as f:

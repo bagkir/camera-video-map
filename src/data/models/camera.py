@@ -51,7 +51,3 @@ class Camera(Base):
     )
 
     videos: Mapped[list["Video"]] = relationship(back_populates="camera")
-
-    @property
-    def has_video(self) -> bool:
-        return len(self.videos) > 0

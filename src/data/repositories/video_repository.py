@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import uuid
 from datetime import datetime
 
 from sqlalchemy import and_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 
 from src.data.models.user import User
@@ -11,13 +13,13 @@ from src.data.repositories.base_repository import BaseRepository
 
 
 class VideoRepository(BaseRepository[Video]):
-    def __init__(self, session):
+    def __init__(self, session: AsyncSession):
         super().__init__(session, Video)
 
     async def list_filtered(
         self,
         *,
-        camera_id=None,
+        camera_id: uuid.UUID | None = None,
         author_id: int | None = None,
         name_search: str | None = None,
         author_search: str | None = None,
