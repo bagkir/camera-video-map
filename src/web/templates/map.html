@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Карта камер{% endblock %}
+{% block body_class %}map-page{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', path='/vendor/maplibre/maplibre-gl.css') }}" />
+<style>
+    #map { position: fixed; top: 3.5rem; left: 0; right: 0; bottom: 0; }
+</style>
+{% endblock %}
+{% block content %}
+<div id="map"></div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', path='/vendor/maplibre/maplibre-gl.js') }}"></script>
+<script src="{{ url_for('static', path='/js/map.js') }}"></script>
+{% endblock %}

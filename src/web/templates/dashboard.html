@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет{% endblock %}
+{% block head %}
+<style>
+    .profile-card { background: #f5f5f5; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; max-width: 400px; }
+    .profile-card h2 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #eee; }
+    .filters { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; margin-top: 1rem; }
+    .filters label { display: flex; flex-direction: column; font-size: 0.85rem; }
+    .badge { padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; color: #fff; }
+    .badge-done { background: #2e7d32; }
+    .badge-run { background: #f9a825; }
+    .badge-error { background: #c62828; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="profile-card">
+    <h2>{{ user.full_name }}</h2>
+    <p>{{ user.email }}</p>
+</div>
+
+<section>
+    <h2>Последние загруженные видео</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Наименование</th><th>Камера</th><th>Длительность</th>
+            <th>Трассировка</th><th>Загружено</th>
+        </tr>
+        </thead>
+        <tbody id="recent-videos-tbody"></tbody>
+    </table>
+</section>
+
+<section>
+    <h2>Все видео</h2>
+    <p>Результаты обработки видео от всех пользователей — можно найти по названию или автору.</p>
+    <form id="video-search-filters" class="filters">
+        <label>Название <input type="text" name="name_search" placeholder="поиск по названию"></label>
+        <label>Пользователь <input type="text" name="author_search" placeholder="поиск по автору"></label>
+        <button type="submit">Найти</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Наименование</th><th>Камера</th><th>Длительность</th>
+            <th>Трассировка</th><th>Автор</th><th>Загружено</th>
+        </tr>
+        </thead>
+        <tbody id="all-videos-tbody"></tbody>
+    </table>
+</section>
+
+<script src="{{ url_for('static', path='/js/format.js') }}"></script>
+<script src="{{ url_for('static', path='/js/dashboard.js') }}"></script>
+{% endblock %}
